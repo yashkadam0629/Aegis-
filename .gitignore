@@ -1,0 +1,24 @@
+# data & artifacts (generated, reproducible)
+/data/
+/artifacts/
+*.db
+*.db-wal
+*.db-shm
+.env
+.env.local
+# python
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.venv/
+# node
+node_modules/
+frontend/dist/
+# logs
+*.log
+scripts_*_tmp.py
+# keep small deliberate results
+!benchmarks/results/*.json
+!benchmarks/results/*.md

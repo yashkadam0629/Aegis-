@@ -1,0 +1,23 @@
+# docker compose up --build            -> SQLite-backed API + UI  (http://localhost:8080)
+# docker compose --profile postgres up  -> also starts PostgreSQL; set AEGIS_DATABASE_URL accordingly
+services:
+  backend:
+    build: { context: ., dockerfile: docker/backend.Dockerfile }
+    environment:
+      AEGIS_DATABASE_URL: ${AEGIS_DATABASE_URL:-sqlite:////app/data/aegis.db}
+      AEGIS_API_KEY: ${AEGIS_API_KEY:-}
+      AEGIS_CORS_ORIGINS: http://localhost:8080
+    volumes: [ "aegis-data:/app/data", "aegis-artifacts:/app/artifacts" ]
+    ports: [ "8000:8000" ]
+    healthcheck: { test: ["CMD", "curl", "-fsS", "http://localhost:8000/api/health"], interval: 15s, timeout: 3s, retries: 5, start_period: 20s }
+  frontend:
+    build: { context: ., dockerfile: docker/frontend.Dockerfile }
+    depends_on: { backend: { condition: service_healthy } }
+    ports: [ "8080:80" ]
+  postgres:
+    profiles: [ "postgres" ]
+    image: postgres:16-alpine
+    environment: { POSTGRES_USER: aegis, POSTGRES_DB: aegis, POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}" }
+    volumes: [ "pg-data:/var/lib/postgresql/data" ]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U aegis"], interval: 10s, timeout: 3s, retries: 5 }
+volumes: { aegis-data: {}, aegis-artifacts: {}, pg-data: {} }

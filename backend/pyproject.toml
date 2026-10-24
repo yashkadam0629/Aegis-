@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aegis-backend"
+version = "0.1.0"
+description = "AEGIS - Advanced Engine for Graph Intelligence and Suspicious Financial Activity Detection (research prototype)"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.110",
+  "uvicorn>=0.27",
+  "pydantic>=2.5",
+  "sqlalchemy>=2.0",
+  "alembic>=1.13",
+  "pandas>=2.1",
+  "numpy>=1.26",
+  "scipy>=1.11",
+  "networkx>=3.2",
+  "scikit-learn>=1.4",
+  "lightgbm>=4.0",
+  "shap>=0.44",
+  "joblib>=1.3",
+  "python-multipart>=0.0.9",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-cov", "httpx>=0.27", "ruff"]
+postgres = ["psycopg2-binary>=2.9"]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::FutureWarning", "ignore::UserWarning"]
+
+[tool.ruff]
+line-length = 200
+
+[tool.ruff.lint]
+select = ["E9", "F", "B"]
+ignore = ["B008", "B904", "B905", "B007", "B023", "E741"]  # B008: FastAPI Depends() defaults are idiomatic
